@@ -13,7 +13,6 @@ def filter_datum(
         fields: List[str], redaction: str,
         message: str, separator: str) -> str:
     """Obfuscates data on a log line by redaction"""
-    # return re.sub(r'({})'.format(separator.join(fields)), redaction, message)
     for field in fields:
         message = re.sub(
             r'{}=(.*?){}'.format(field, separator),
@@ -39,7 +38,7 @@ class RedactingFormatter(logging.Formatter):
                             super().format(record), self.SEPARATOR)
 
 
-PII_FIELDS = ('email', 'phone', 'ssn', 'ip', 'name')
+PII_FIELDS = ('email', 'phone', 'ssn', 'password', 'name')
 
 
 def get_logger() -> logging.Logger:
@@ -77,3 +76,28 @@ def get_db() -> mysql.connector.connection.MySQLConnection:
     )
 
     return connection
+
+
+def main():
+    logger = get_logger()
+    db_connection = get_db()
+    cursor = db_connection.cursor()
+
+    cursor.execute("SELECT * FROM users")
+    rows = cursor.fetchall()
+    columns = [desc[0] for desc in cursor.description]
+
+    for data in rows:
+        row_dict = {columns[i]: data[i] for i in range(len(data))}
+        row_str = "; ".join(f"{key}={val}" for key, val in row_dict.items())
+        filtered = filter_datum(
+            PII_FIELDS, RedactingFormatter.REDACTION, row_str,
+            RedactingFormatter.SEPARATOR,
+        )
+        logger.info(filtered)
+    cursor.close()
+    db_connection.close()
+
+
+if __name__ == "__main__":
+    main()
