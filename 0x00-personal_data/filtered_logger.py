@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 """Alx Backend User Data module"""
+import mysql.connector
 from typing import List
 import re
 import logging
 import logging
 import csv
+import os
 
 
 def filter_datum(
@@ -53,3 +55,25 @@ def get_logger() -> logging.Logger:
     logger.addHandler(stream_handler)
 
     return logger
+
+
+def get_db() -> csv.reader:
+    """Returns a csv.reader object"""
+    return csv.reader(open('db.csv', 'r'))
+
+
+def get_db() -> mysql.connector.connection.MySQLConnection:
+    """Returns a connector to the database"""
+    username = os.getenv('PERSONAL_DATA_DB_USERNAME', 'root')
+    password = os.getenv('PERSONAL_DATA_DB_PASSWORD', '')
+    host = os.getenv('PERSONAL_DATA_DB_HOST', 'localhost')
+    database = os.getenv('PERSONAL_DATA_DB_NAME')
+
+    connection = mysql.connector.connect(
+        user=username,
+        password=password,
+        host=host,
+        database=database
+    )
+
+    return connection
