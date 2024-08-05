@@ -1,2 +1,8 @@
 __pycache__
+venv
+virtualenv
+env
+t
+*.test
+*.t
 
