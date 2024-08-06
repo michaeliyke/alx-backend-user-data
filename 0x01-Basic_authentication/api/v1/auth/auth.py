@@ -33,6 +33,10 @@ class Auth:
         for excluded_path in excluded_paths:
             if excluded_path == path:
                 return False
+            # Handle allowing * at the end of excluded path
+            if excluded_path[-1] == '*':
+                if path.startswith(excluded_path[:-1]):
+                    return False
         # path isn't excluded, so auth is required
         return True
 
