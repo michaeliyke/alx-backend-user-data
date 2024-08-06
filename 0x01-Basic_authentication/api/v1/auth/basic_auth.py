@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
 """Module manage the API authentication."""
 from flask import request
-from typing import List, TypeVar
+from typing import List, TypeVar, Tuple
 from api.v1.auth.auth import Auth
 import base64
 
 
 class BasicAuth(Auth):
     """Basic Auth class implements basic authentication."""
+
+    def extract_user_credentials(self, decoded_base64_authorization_header:
+                                 str) -> Tuple[str, str]:
+        """Extracts the user credentials from the base64 decoded value.
+        Returns the user email and password from the Base64 decoded value.
+        """
+        if not decoded_base64_authorization_header:
+            return (None, None)
+        if not isinstance(decoded_base64_authorization_header, str):
+            return (None, None)
+        if ':' not in decoded_base64_authorization_header:
+            return (None, None)
+        return tuple(decoded_base64_authorization_header.split(':', 1))
 
     def decode_base64_authorization_header(self, base64_authorization_header:
                                            str) -> str:
