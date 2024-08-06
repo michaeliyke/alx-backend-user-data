@@ -12,6 +12,22 @@ user = TypeVar('User')
 class BasicAuth(Auth):
     """Basic Auth class implements basic authentication."""
 
+    def current_user(self, request=None) -> user:
+        """Retrieves the User instance for a request"""
+        header = self.authorization_header(request)
+        if not header:
+            return None
+        encrypted = self.extract_base64_authorization_header(header)
+        if not encrypted:
+            return None
+        decoded = self.decode_base64_authorization_header(encrypted)
+        if not decoded:
+            return None
+        user_email, user_pwd = self.extract_user_credentials(decoded)
+        if not user_email or not user_pwd:
+            return None
+        return self.user_object_from_credentials(user_email, user_pwd)
+
     def user_object_from_credentials(self, user_email: str, user_pwd:
                                      str) -> user:
         """Returns the User instance based on email and password."""
