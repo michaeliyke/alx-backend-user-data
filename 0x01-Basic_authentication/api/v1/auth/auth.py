@@ -10,25 +10,44 @@ class Auth:
     """class to manage the API authentication"""
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
-        """Require authentication
         """
-        if path is None or excluded_paths is None or len(excluded_paths) == 0:
+        Returns True if the path is not in the list of excluded paths
+        This will enable auth for the path
+        Must be slash tolerant: path=/api/v1/status and path=/api/v1/status/
+        should be considered the same path
+        """
+
+        if not path or not excluded_paths:
             return True
+
+        # Make sure the path ends with a '/'
         if path[-1] != '/':
             path += '/'
-        if path in excluded_paths:
-            return False
+
+        # Make sure all excluded paths end with a '/'
+        for i in range(len(excluded_paths)):
+            if excluded_paths[i][-1] != '/':
+                excluded_paths[i] += '/'
+
+        # Finally, check if the path is excluded from auth
+        for excluded_path in excluded_paths:
+            if excluded_path == path:
+                return False
+        # path isn't excluded, so auth is required
         return True
 
     def authorization_header(self, request=None) -> str:
-        """Authorization header
+        """
+        Get the Authorization header from the request if reuired and available
+        """
+        # If auth is not required or not provided
         if request is None or 'Authorization' not in request.headers:
             return None
+        # Return the provided auth
         return request.headers['Authorization']
-        """
-        return None
 
     def current_user(self, request=None) -> User:
-        """Current user
+        """
+        Check if there is an authenticated user
         """
         return None
