@@ -15,8 +15,9 @@ CORS(app, resources={r"/api/v1/*": {"origins": "*"}})
 auth = os.getenv('AUTH_TYPE', None)
 
 if auth:
+    from api.v1.auth.basic_auth import BasicAuth
     from api.v1.auth.auth import Auth
-    auth = Auth()
+    auth = BasicAuth() if auth == 'basic_auth' else Auth()
 
 
 @app.before_request
