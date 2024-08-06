@@ -35,8 +35,16 @@ class Auth:
                 return False
             # Handle allowing * at the end of excluded path
             if excluded_path[-1] == '*':
+                # Confirm startswith
                 if path.startswith(excluded_path[:-1]):
-                    return False
+                    # Get the remaining string after current match
+                    temp = path[len(excluded_path) - 1:]
+                    # Ensure temp is not words
+                    if len(temp.split()) < 2:
+                        return False
+                    # Confirm no more than one slashes in the remaining string
+                    if temp.count('/') < 2:
+                        return False
         # path isn't excluded, so auth is required
         return True
 
