@@ -11,40 +11,48 @@ class Auth:
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
-        Returns True if the path is not in the list of excluded paths
-        This will enable auth for the path
-        Must be slash tolerant: path=/api/v1/status and path=/api/v1/status/
-        should be considered the same path
-        """
+        Determines whether authentication is required for a given path.
+
+        Returns True if the path is not in the list of excluded paths,
+        enabling authentication for the path. Handles paths that end with
+        or without a slash interchangeably and supports wildcard '*' at
+        the end of excluded paths.
+
+        Args:
+            path (str): The path to check.
+            excluded_paths (List[str]): A list of paths to exclude from auth.
+
+        Returns:
+            bool: True if authentication is required, False otherwise.
+    """
 
         if not path or not excluded_paths:
             return True
 
-        # Make sure the path ends with a '/'
-        if path[-1] != '/':
-            path += '/'
+        # Enure the path ends with a '/'
+        path = path if path.endswith('/') else path + '/'
 
-        # Make sure all excluded paths end with a '/'
-        for i in range(len(excluded_paths)):
-            if excluded_paths[i][-1] != '/':
-                excluded_paths[i] += '/'
+        # Enure all excluded paths end with a '/'
+        normalized_paths = [
+            p if p.endswith('/') or p.endswith('*') else p + '/'
+            for p in excluded_paths
+        ]
 
         # Finally, check if the path is excluded from auth
-        for excluded_path in excluded_paths:
-            if excluded_path == path:
+        for excluded_path in normalized_paths:
+            # Handle wildcard at the end of the excluded path
+            if excluded_path.endswith('*'):
+                base_path = excluded_path[:-1]  # Remove the '*'
+                if path.startswith(base_path):
+                    # Get the remaining path after the base path
+                    remaining_path = path[len(base_path):]
+                    # Ensure remaining_path doesn't contain a string after '/'
+                    temp = remaining_path.split('/')
+                    if len(temp) == 2 and not temp[1]:
+                        return False
+            elif path == excluded_path:
                 return False
-            # Handle allowing * at the end of excluded path
-            if excluded_path[-1] == '*':
-                # Confirm startswith
-                if path.startswith(excluded_path[:-1]):
-                    # Get the remaining string after current match
-                    temp = path[len(excluded_path) - 1:]
-                    # Ensure temp is not words
-                    if len(temp.split()) < 2:
-                        return False
-                    # Confirm no more than one slashes in the remaining string
-                    if temp.count('/') < 2:
-                        return False
+
         # path isn't excluded, so auth is required
         return True
 
