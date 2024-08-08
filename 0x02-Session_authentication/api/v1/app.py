@@ -34,7 +34,8 @@ def before_request():
     if auth:
         request.current_user = auth.current_user(request)
     excluded = [
-        '/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
+        '/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/',
+        '/api/v1/auth_session/login/']
     # if auth is needed i.e is specified in the environment variable, and
     # path is not excluded from auth
     if auth and auth.require_auth(request.path, excluded):
@@ -44,6 +45,9 @@ def before_request():
         # If request user isn't authenticated, disallow it
         if auth.current_user(request) is None:
             abort(403)
+        if auth.authorization_header(request) and auth.session_cookie(request):
+            return None
+        abort(401)
 
 
 @app.errorhandler(403)
