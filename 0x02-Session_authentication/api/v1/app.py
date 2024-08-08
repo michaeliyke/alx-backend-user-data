@@ -24,6 +24,8 @@ if auth:
 def before_request():
     """ Before request
     """
+    if auth:
+        request.current_user = auth.current_user(request)
     excluded = [
         '/api/v1/status/', '/api/v1/unauthorized/', '/api/v1/forbidden/']
     # if auth is needed i.e is specified in the environment variable, and
