@@ -8,19 +8,23 @@ from flask import Flask, jsonify, abort, request
 from flask_cors import (CORS, cross_origin)
 import os
 from api.v1.auth.basic_auth import Auth
-from uuid import uuid4
+from uuid import uuid4, UUID
+from typing import Union
 
 
 class SessionAuth(Auth):
     """Session auth wrapper around the Auth class"""
     user_id_by_session_id = {}
 
-    def user_id_for_session_id(self, session_id: str = None) -> str:
+    def user_id_for_session_id(self, session_id: Union[str, UUID] = None)\
+            -> str:
         """Returns user id based on session id"""
         if session_id is None:
             return None
-        if not isinstance(session_id, str):
-            return None
+        if type(session_id) is not str:
+            if type(session_id) is not UUID:
+                return None
+            session_id = str(session_id)
         return self.user_id_by_session_id.get(session_id)
 
     def create_session(self, user_id: str = None) -> str:
@@ -30,5 +34,5 @@ class SessionAuth(Auth):
         if not isinstance(user_id, str):
             return None
         session_id = uuid4()
-        self.user_id_by_session_id[session_id] = user_id
+        self.user_id_by_session_id[str(session_id)] = user_id
         return session_id
