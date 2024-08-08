@@ -2,12 +2,20 @@
 """Module manage the API authentication."""
 from flask import request
 from typing import List, TypeVar
+import os
 
 User = TypeVar('User')
 
 
 class Auth:
     """class to manage the API authentication"""
+
+    def session_cookie(self, request=None):
+        """Get the session cookie from the request"""
+        if request is None:
+            return None
+        cookie_name = os.getenv('SESSION_NAME')
+        return request.cookies.get(cookie_name)
 
     def require_auth(self, path: str, excluded_paths: List[str]) -> bool:
         """
