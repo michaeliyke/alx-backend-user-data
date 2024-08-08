@@ -10,11 +10,22 @@ import os
 from api.v1.auth.basic_auth import Auth
 from uuid import uuid4, UUID
 from typing import Union
+from models.user import User
 
 
 class SessionAuth(Auth):
     """Session auth wrapper around the Auth class"""
     user_id_by_session_id = {}
+
+    def current_user(self, request=None):
+        """Returns a User instance based on a cookie value."""
+        if request is None:
+            return None
+        session_id = self.session_cookie(request)
+        user_id = self.user_id_for_session_id(session_id)
+        if user_id is None:
+            return None
+        return User.get(user_id)
 
     def user_id_for_session_id(self, session_id: Union[str, UUID] = None)\
             -> str:
