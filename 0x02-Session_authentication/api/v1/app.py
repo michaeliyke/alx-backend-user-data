@@ -45,9 +45,8 @@ def before_request():
         # If request user isn't authenticated, disallow it
         if auth.current_user(request) is None:
             abort(403)
-        if auth.authorization_header(request) and auth.session_cookie(request):
-            return None
-        abort(401)
+        if not auth.session_cookie(request):
+            abort(401)
 
 
 @app.errorhandler(403)

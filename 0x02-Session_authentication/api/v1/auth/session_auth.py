@@ -25,7 +25,7 @@ class SessionAuth(Auth):
             if type(session_id) is not UUID:
                 return None
             session_id = str(session_id)
-        return self.user_id_by_session_id.get(session_id)
+        return self.user_id_by_session_id.get(session_id, None)
 
     def create_session(self, user_id: str = None) -> str:
         """Creates session id from user id"""
