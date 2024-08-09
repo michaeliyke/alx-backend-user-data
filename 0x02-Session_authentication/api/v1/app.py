@@ -38,7 +38,7 @@ def before_request():
         '/api/v1/auth_session/login/']
     # if auth is needed i.e is specified in the environment variable, and
     # path is not excluded from auth
-    requires_auth = auth.require_auth(request.path, excluded)
+    requires_auth = auth and auth.require_auth(request.path, excluded)
     if auth and requires_auth:
         header_auth_token = auth.authorization_header(request)
         cookie_token = auth.session_cookie(request)
