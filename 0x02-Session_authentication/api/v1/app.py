@@ -38,15 +38,19 @@ def before_request():
         '/api/v1/auth_session/login/']
     # if auth is needed i.e is specified in the environment variable, and
     # path is not excluded from auth
-    if auth and auth.require_auth(request.path, excluded):
+    requires_auth = auth.require_auth(request.path, excluded)
+    if auth and requires_auth:
+        has_authorization = auth.authorization_header(request)
+        has_cookie = auth.session_cookie(request)
+        is_valid_user = auth.current_user(request)
+        if has_cookie(request):
+            return
         # if request contains no Authorization header, disallow it
-        if auth.authorization_header(request) is None:
+        if not has_authorization:
             abort(401)
         # If request user isn't authenticated, disallow it
-        if auth.current_user(request) is None:
+        if not is_valid_user:
             abort(403)
-        if not auth.session_cookie(request):
-            abort(401)
 
 
 @app.errorhandler(403)
