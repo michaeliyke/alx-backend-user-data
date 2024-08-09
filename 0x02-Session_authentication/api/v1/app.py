@@ -40,13 +40,15 @@ def before_request():
     # path is not excluded from auth
     requires_auth = auth.require_auth(request.path, excluded)
     if auth and requires_auth:
-        has_authorization = auth.authorization_header(request)
-        has_cookie = auth.session_cookie(request)
+        header_auth_token = auth.authorization_header(request)
+        cookie_token = auth.session_cookie(request)
         is_valid_user = auth.current_user(request)
-        if has_cookie(request):
+        if cookie_token:  # We have a session cookie
+            if not is_valid_user:  # The session cookie is invalid
+                abort(403)
             return
         # if request contains no Authorization header, disallow it
-        if not has_authorization:
+        if not header_auth_token:
             abort(401)
         # If request user isn't authenticated, disallow it
         if not is_valid_user:
