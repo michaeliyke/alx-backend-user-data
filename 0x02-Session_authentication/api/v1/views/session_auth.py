@@ -9,6 +9,8 @@ import os
 
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def auth_session_login():
+    """Authenticates a user and creates a session
+    """
     from api.v1.app import auth
 
     email = request.form.get('email')
