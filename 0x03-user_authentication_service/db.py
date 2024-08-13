@@ -39,6 +39,6 @@ class DB:
         Memoized session object
         """
         if self.__session is None:
-            DBSession = sessionmaker(bind=self._engine, expire_on_commit=False)
+            DBSession = sessionmaker(bind=self._engine)
             self.__session = DBSession()
         return self.__session
