@@ -32,9 +32,7 @@ class Auth:
         if user:
             raise ValueError(f"User {email} already exists.")
 
-        hashed_password = _hash_password(password)
-        user = User(email=email, hashed_password=hashed_password)
-        return self._db.add_user(email, hashed_password)
+        return self._db.add_user(email, _hash_password(password))
 
     def __init__(self):
         self._db = DB()
