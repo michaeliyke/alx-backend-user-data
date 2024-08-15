@@ -8,19 +8,19 @@ AUTH = Auth()
 
 
 @app.route("/", methods=["GET"], strict_slashes=False)
-def homepage():
+def homepage() -> str:
     """The homepage endpoint function"""
     return make_response(jsonify({"message": "Bienvenue"}), 200)
 
 
 @app.route("/status", methods=["GET"], strict_slashes=False)
-def status():
+def status() -> str:
     """/status endpoint function"""
     return make_response(jsonify({"status": "Ok"}), 200)
 
 
 @app.route("/users", methods=["POST"], strict_slashes=False)
-def users():
+def users() -> str:
     """/users endpoint function"""
     email = request.form.get("email")
     password = request.form.get("password")
@@ -29,7 +29,7 @@ def users():
         AUTH.register_user(email, password)
         return make_response(jsonify({"email": email, "message": "user created"}), 200)
     except ValueError:
-        return make_response(jsonify({"message": "email already registered"}), 400)
+        return (jsonify({"message": "email already registered"}), 400,)
 
 
 if __name__ == "__main__":
