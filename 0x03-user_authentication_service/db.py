@@ -37,19 +37,26 @@ class DB:
         """
         try:
             user = self._session.query(User).filter_by(**kwargs).first()
-            if user is None:
-                raise NoResultFound("No user found")
-            return user
-        except InvalidRequestError as e:
-            raise e
+        except NoResultFound:
+            raise NoResultFound("No matching results found")
+        except InvalidRequestError:
+            raise InvalidRequestError("Incorrect query arguments")
+
+        if user == None:
+            raise NoResultFound("No matching results found")
+        return user
 
     def add_user(self, email: str, hashed_password: str) -> User:
         """
         Add a new user to the database
         """
-        user = User(email=email, hashed_password=hashed_password)
-        self._session.add(user)
-        self._session.commit()
+        try:
+            user = User(email=email, hashed_password=hashed_password)
+            self._session.add(user)
+            self._session.commit()
+        except Exception:
+            self.__session.rollback()
+            return
         return user
 
     def __init__(self) -> None:
