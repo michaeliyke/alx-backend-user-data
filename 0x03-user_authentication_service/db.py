@@ -42,7 +42,7 @@ class DB:
         except InvalidRequestError:
             raise InvalidRequestError("Incorrect query arguments")
 
-        if user == None:
+        if user is None:
             raise NoResultFound("No matching results found")
         return user
 
