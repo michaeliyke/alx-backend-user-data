@@ -25,7 +25,6 @@ class Auth:
         """
         Registers a new user with the given email and password.
         """
-        # Check if user already exists
         try:
             user = self._db.find_user_by(email=email)
         except Exception:
@@ -33,13 +32,9 @@ class Auth:
         if user:
             raise ValueError(f"User {email} already exists.")
 
-        # Hash the password
         hashed_password = _hash_password(password)
-
-        # Save the user to the database
         user = User(email=email, hashed_password=hashed_password)
-        self._db.add_user(email, hashed_password)
-        return user
+        return self._db.add_user(email, hashed_password)
 
     def __init__(self):
         self._db = DB()
