@@ -1,10 +1,33 @@
 #!/usr/bin/env python3
 """Module for a simple flask app"""
-from flask import Flask, jsonify, make_response, request
+from flask import (
+    Flask,
+    jsonify,
+    make_response,
+    request,
+    abort,
+)
 from auth import Auth
 
 app = Flask(__name__)
 AUTH = Auth()
+
+
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
+def login() -> str:
+    """/sessions endpoint function"""
+    email = request.form.get("email")
+    password = request.form.get("password")
+
+    if AUTH.valid_login(email, password):
+        session_id = AUTH.create_session(email)
+        response = make_response(jsonify({
+            "message": "logged in",
+            "email": email,
+        }), 200)
+        response.set_cookie("session_id", session_id)
+        return response
+    abort(401)
 
 
 @app.route("/", methods=["GET"], strict_slashes=False)
