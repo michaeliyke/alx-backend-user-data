@@ -14,6 +14,20 @@ app = Flask(__name__)
 AUTH = Auth()
 
 
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
+def reset_password() -> str:
+    """/reset_password endpoint function"""
+    try:
+        email = request.form.get("email")
+        reset_token = AUTH.generate_reset_token(email)
+    except ValueError:
+        abort(403)
+    return make_response(jsonify({
+        "email": email,
+        "reset_token": reset_token,
+    }), 200)
+
+
 @app.route("/profile", methods=["GET"], strict_slashes=False)
 def profile() -> str:
     """/profile endpoint function"""
