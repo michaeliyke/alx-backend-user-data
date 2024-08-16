@@ -26,8 +26,21 @@ def _generate_uuid() -> str:
 
 
 class Auth:
-    """Auth class to interact with the authentication database.
     """
+    Auth class to interact with the authentication database.
+    """
+
+    def get_user_from_session_id(self, session_id: str) -> User:
+        """
+        Retrieves the user associated with the given session ID.
+        """
+        if not session_id:
+            return None
+        try:
+            user = self._db.find_user_by(session_id=session_id)
+        except NoResultFound:
+            return None
+        return user
 
     def create_session(self, email: str) -> str:
         """
