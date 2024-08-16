@@ -20,7 +20,7 @@ def reset_password() -> str:
     try:
         email = request.form.get("email")
         reset_token = AUTH.generate_reset_token(email)
-    except ValueError:
+    except Exception:
         abort(403)
     return make_response(jsonify({
         "email": email,
