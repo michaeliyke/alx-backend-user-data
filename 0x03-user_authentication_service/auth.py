@@ -5,6 +5,7 @@ Module for the DB management class
 from db import DB
 import bcrypt  # type: ignore
 from user import User
+import uuid
 from sqlalchemy.orm.exc import NoResultFound  # type: ignore
 
 
@@ -15,6 +16,13 @@ def _hash_password(password: str) -> bytes:
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     return hashed_password
+
+
+def _generate_uuid() -> str:
+    """
+    Generates a new UUID and returns it as a string.
+    """
+    return str(uuid.uuid4())
 
 
 class Auth:
