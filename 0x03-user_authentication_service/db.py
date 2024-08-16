@@ -7,8 +7,8 @@ from sqlalchemy.orm.session import Session  # type: ignore
 from sqlalchemy.orm import sessionmaker  # type: ignore
 from sqlalchemy import create_engine  # type: ignore
 from user import User  # type: ignore
-from sqlalchemy.exc import InvalidRequestError, NoResultFound  # type: ignore
-from typing import Optional
+from sqlalchemy.orm.exc import NoResultFound  # type: ignore
+from sqlalchemy.exc import InvalidRequestError  # type: ignore
 
 
 class DB:
