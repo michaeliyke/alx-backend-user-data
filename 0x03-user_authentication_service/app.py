@@ -14,6 +14,19 @@ app = Flask(__name__)
 AUTH = Auth()
 
 
+@app.route("/profile", methods=["GET"], strict_slashes=False)
+def profile() -> str:
+    """/profile endpoint function"""
+    session_id = request.cookies.get("session_id")
+    if session_id:
+        user = AUTH.get_user_from_session_id(session_id)
+        if user:
+            return make_response(jsonify({
+                "email": user.email,
+            }), 200)
+    abort(403)
+
+
 @app.route("/sessions", methods=["DELETE"], strict_slashes=False)
 def logout() -> str:
     """/sessions endpoint function to logout"""
