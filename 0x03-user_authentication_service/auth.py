@@ -3,9 +3,9 @@
 Module for the DB management class
 """
 from db import DB
-import bcrypt
+import bcrypt  # type: ignore
 from user import User
-from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm.exc import NoResultFound  # type: ignore
 
 
 def _hash_password(password: str) -> bytes:
