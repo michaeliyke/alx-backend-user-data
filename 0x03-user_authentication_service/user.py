@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Module for User model class"""
-from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Column, Integer, String  # type: ignore
+from sqlalchemy.ext.declarative import declarative_base  # type: ignore
+from typing import Any
 
 
-Base = declarative_base()
+Base: Any = declarative_base()
 
 
 class User(Base):

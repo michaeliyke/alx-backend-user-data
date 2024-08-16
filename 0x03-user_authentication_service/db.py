@@ -2,13 +2,13 @@
 """
 Module for the DB management class
 """
-from user import Base
-from sqlalchemy.orm.session import Session
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import create_engine
-from user import User
-from sqlalchemy.exc import InvalidRequestError, NoResultFound
+from user import Base  # type: ignore
+from sqlalchemy.orm.session import Session  # type: ignore
+from sqlalchemy.orm import sessionmaker  # type: ignore
+from sqlalchemy import create_engine  # type: ignore
+from user import User  # type: ignore
+from sqlalchemy.exc import InvalidRequestError, NoResultFound  # type: ignore
+from typing import Optional
 
 
 class DB:
@@ -55,8 +55,8 @@ class DB:
             self._session.add(user)
             self._session.commit()
         except Exception:
-            self.__session.rollback()
-            return
+            if self._session is not None:
+                self._session.rollback()
         return user
 
     def __init__(self) -> None:
@@ -66,12 +66,16 @@ class DB:
         self._engine = create_engine("sqlite:///a.db", echo=False)
         Base.metadata.drop_all(self._engine)
         Base.metadata.create_all(self._engine)
-        self.__session = None
+        self.__session = None  # The private attr '__session' is init to None
 
     @property
     def _session(self) -> Session:
-        """
-        Memoized session object
+        """Memoized session object
+
+        The property '_session' is memoized to avoid creating multiple sessions
+        The memoized object is stored in the private attribute '__session'
+        So, you access the session object using the property '_session',
+        not the private attribute '__session'
         """
         if self.__session is None:
             DBSession = sessionmaker(bind=self._engine)
