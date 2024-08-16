@@ -29,6 +29,18 @@ class Auth:
     """Auth class to interact with the authentication database.
     """
 
+    def create_session(self, email: str) -> str:
+        """
+        Creates a new session for the user with the given email.
+        """
+        try:
+            user = self._db.find_user_by(email=email)
+            session_id = _generate_uuid()
+            self._db.update_user(user.id, session_id=session_id)
+        except NoResultFound:
+            return None
+        return session_id
+
     def valid_login(self, email: str, password: str) -> bool:
         """
         Validates the login credentials for the given email and password.
