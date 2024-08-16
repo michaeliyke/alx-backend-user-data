@@ -6,11 +6,24 @@ from flask import (
     make_response,
     request,
     abort,
+    redirect,
 )
 from auth import Auth
 
 app = Flask(__name__)
 AUTH = Auth()
+
+
+@app.route("/sessions", methods=["DELETE"], strict_slashes=False)
+def logout() -> str:
+    """/sessions endpoint function to logout"""
+    session_id = request.cookies.get("session_id")
+    if session_id:
+        user = AUTH.get_user_from_session_id(session_id)
+        if user:
+            AUTH.destroy_session(user.id)
+            return redirect("/")
+    abort(403)
 
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
