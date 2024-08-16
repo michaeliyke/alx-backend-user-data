@@ -30,6 +30,16 @@ class Auth:
     Auth class to interact with the authentication database.
     """
 
+    def destroy_session(self, user_id: int) -> None:
+        """
+        Destroys the session for the user with the given user ID.
+        """
+        try:
+            self._db.update_user(user_id, session_id=None)
+        except NoResultFound:
+            pass
+        return None
+
     def get_user_from_session_id(self, session_id: str) -> User:
         """
         Retrieves the user associated with the given session ID.
