@@ -14,6 +14,8 @@ def _hash_password(password: str) -> bytes:
     Hashes the input password using bcrypt
     """
     salt = bcrypt.gensalt()
+    if not password:
+        password = ""
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     return hashed_password
 
@@ -96,6 +98,7 @@ class Auth:
         try:
             user = self._db.find_user_by(email=email)
         except NoResultFound:
+            print("NO User: ", email, password)
             return False
         return bcrypt.checkpw(password.encode(), user.hashed_password)
 
